@@ -1,0 +1,11 @@
+release/main.o
+release/mainwindow.o
+release/chessalgorithm.o
+release/chessboard.o
+release/chessview.o
+release/pieces.o
+release/qrc_app_resource.o
+release/moc_mainwindow.o
+release/moc_chessalgorithm.o
+release/moc_chessboard.o
+release/moc_chessview.o
