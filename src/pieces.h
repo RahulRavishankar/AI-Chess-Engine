@@ -56,8 +56,12 @@ class Piece
 					
 					return false;
                 }
-				//move one or two steps further
-				return true;
+
+                //move one or two steps further if empty
+                if(!isEmpty(board,dest_row,dest_col))
+                    return false;
+
+                return true;
 			}
             void allMoves(QVector<QVector<char> > &board,QVector< QVector<QVector<char> > > &boardStates, int init_row, int init_col)
 			{
@@ -66,9 +70,8 @@ class Piece
 				if(board[init_row][init_col]=='p')	dx={1,1, 1};
 				else								dx={-1,-1,-1};
 				QVector<int> dy={0,-1,1};
-				/*QVector<int> dx={-1,-1,-1,0,1,1, 1,0};
-				QVector<int> dy={-1, 0, 1,1,1,0,-1,1};*/
-				for(int di=0;di<dx.size();di++)
+
+                for(int di=0;di<dx.size();di++)
 				{
 					if(!isOutofRange(init_row+dx[di],init_col+dy[di]) && isValid(board,init_row,init_col,init_row+dx[di],init_col+dy[di]) )
 					{
@@ -76,7 +79,6 @@ class Piece
 					}
 						
 				}
-				//cout<<"Number of moves added: "<<count_moves<<"\n";
 			}
 	};
 
@@ -92,8 +94,10 @@ class Piece
 				int diff1 = abs(dest_row - init_row);
 				int diff2 = abs(dest_col - init_col);
 				
+                //if the move is L-shaped
 				if ( (diff1 == 2 && diff2 == 1) || (diff1 == 1 && diff2 == 2) ) 
 				{
+                    // if the destination cell is not empty
 					if(!isEmpty(board,dest_row,dest_col))
 					{
 						if(isDifferentColor(board,init_row,init_col,dest_row,dest_col))
@@ -108,23 +112,38 @@ class Piece
 			}
 			void allMoves(QVector<QVector<char> > &board,QVector< QVector<QVector<char> > > &boardStates, int init_row, int init_col)
 			{
-				//int count_moves=0; cout<<"number of moves(Knight)=====\n";
 				QVector<int> dx={-2,-1, 1, 2, 2, 1,-1,-2};
 				QVector<int> dy={ 1, 2, 2, 1,-1,-2,-2,-1};
 				for(int di=0;di<8;di++)
 				{
 					if(!isOutofRange(init_row+dx[di],init_col+dy[di]) && isValid(board,init_row,init_col,init_row+dx[di],init_col+dy[di]) )
 					{
-						addMove(board,boardStates,init_row,init_col,init_row+dx[di],init_col+dy[di]); //count_moves++;
+                        addMove(board,boardStates,init_row,init_col,init_row+dx[di],init_col+dy[di]);
 					}
 				}
-				//cout<<"Number of moves added: "<<count_moves<<"\n";
 			}
 	};
 
 	class Bishop
 	{
 		public:
+            bool isJump(const QVector<QVector<char> > &board,int init_row, int init_col, int dest_row, int dest_col)
+            {
+                init_col=init_col+1*((init_col<dest_col)?1:-1);
+                init_row=init_row+1*((init_row<dest_row)?1:-1);
+                while(init_col!=dest_col && init_col==' ' && init_row!=dest_row && init_row==' ')
+                    init_col=init_col+1*((init_col<dest_col)?1:-1),
+                    init_row=init_row+1*((init_row<dest_row)?1:-1);
+
+                if(init_col!=dest_col)  //found a piece along the way, cannot jump
+                    return false;
+
+                //reached the final dest, check if it's of different color
+                if(isDifferentColor(board,init_row,init_col,dest_row,dest_col))
+                    return true;
+
+                return false;
+            }
 			bool isValid(const QVector<QVector<char> > &board,int init_row, int init_col, int dest_row, int dest_col)
 			{
 				//if initial sqauare is empty return false 
@@ -160,7 +179,7 @@ class Piece
 		public:
 			bool isValid(const QVector<QVector<char> > &board,int init_row, int init_col, int dest_row, int dest_col)
 			{
-				//if initial sqauare is empty return false 
+                //if initial square is empty return false
 				if(isEmpty(board,init_row,init_col) || isOutofRange(dest_row,dest_col))
 					return false;
 
@@ -194,6 +213,47 @@ class Piece
 	class Queen
 	{
 		public:
+            bool isJump(const QVector<QVector<char> > &board,int init_row, int init_col, int dest_row, int dest_col, bool axial_movement)
+            {
+                if(axial_movement)
+                {
+                    if(init_row==dest_row)
+                    {
+                        init_col=init_col+1*((init_col<dest_col)?1:-1);
+                        while(init_col!=dest_col && init_col==' ')
+                            init_col=init_col+1*((init_col<dest_col)?1:-1);
+
+                        if(init_col!=dest_col)  //found a piece along the way, cannot jump
+                            return false;
+                    }
+                    else
+                    {
+                        init_row=init_row+1*((init_row<dest_row)?1:-1);
+                        while(init_row!=dest_row && init_row==' ')
+                            init_row=init_row+1*((init_row<dest_row)?1:-1);
+
+                        if(init_row!=dest_row)  //found a piece along the way, cannot jump
+                            return false;
+
+                    }
+                }
+                else
+                {
+                    init_col=init_col+1*((init_col<dest_col)?1:-1);
+                    init_row=init_row+1*((init_row<dest_row)?1:-1);
+                    while(init_col!=dest_col && init_col==' ' && init_row!=dest_row && init_row==' ')
+                        init_col=init_col+1*((init_col<dest_col)?1:-1),
+                        init_row=init_row+1*((init_row<dest_row)?1:-1);
+
+                    if(init_col!=dest_col)  //found a piece along the way, cannot jump
+                        return false;
+                }
+                //reached the final dest, check if it's of different color
+                if(isDifferentColor(board,init_row,init_col,dest_row,dest_col))
+                    return true;
+
+                return false;
+            }
 			bool isValid(const QVector<QVector<char> > &board,int init_row, int init_col, int dest_row, int dest_col)
 			{
 				//if initial sqauare is empty return false 
@@ -206,7 +266,7 @@ class Piece
 				//horizontal or vertical movement
 				if( (diff1==0 && diff2>0) || (diff1>0 && diff2==0) )
 				{
-					if(isJump(board,init_row,init_col,dest_row,dest_col))
+                    if(isJump(board,init_row,init_col,dest_row,dest_col,true))
 						return false;
 					
 					if(!isEmpty(board,dest_row,dest_col))
@@ -222,7 +282,7 @@ class Piece
 				//diagonal movement
 				if(diff1==diff2)
 				{
-					if(isJump(board,init_row,init_col,dest_row,dest_col))
+                    if(isJump(board,init_row,init_col,dest_row,dest_col,false))
 						return false;
 					
 					if(isEmpty(board,dest_row,dest_col))
@@ -244,6 +304,33 @@ class Piece
 	class Rook
 	{
 		public:
+            bool isJump(const QVector<QVector<char> > &board,int init_row, int init_col, int dest_row, int dest_col)
+            {
+                if(init_row==dest_row)
+                {
+                    init_col=init_col+1*((init_col<dest_col)?1:-1);
+                    while(init_col!=dest_col && init_col==' ')
+                        init_col=init_col+1*((init_col<dest_col)?1:-1);
+
+                    if(init_col!=dest_col)  //found a piece along the way, cannot jump
+                        return false;
+                }
+                else
+                {
+                    init_row=init_row+1*((init_row<dest_row)?1:-1);
+                    while(init_row!=dest_row && init_row==' ')
+                        init_row=init_row+1*((init_row<dest_row)?1:-1);
+
+                    if(init_row!=dest_row)  //found a piece along the way, cannot jump
+                        return false;
+
+                }
+                //reached the final dest, check if it's of different color
+                if(isDifferentColor(board,init_row,init_col,dest_row,dest_col))
+                    return true;
+
+                return false;
+            }
 			bool isValid(const QVector<QVector<char> > &board,int init_row, int init_col, int dest_row, int dest_col)
 			{
 				//if initial sqauare is empty return false 
@@ -276,7 +363,6 @@ class Piece
 	};
 	public:
         Pawn pawn; Knight knight; Bishop bishop; Rook rook; Queen queen; King king;
-        static bool isJump (const QVector<QVector<char> > &board, int,int,int,int);
         static bool isEmpty(const QVector<QVector<char> > &board, int dest_row, int dest_col);
         static bool isDifferentColor(const QVector<QVector<char> > &board,int init_row, int init_col, int dest_row, int dest_col);
         static int calculateScore(const QVector<QVector<char> > &board);

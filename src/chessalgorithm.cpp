@@ -33,7 +33,7 @@ void ChessAlgorithm::newGame()
 {
     setupBoard();
     QVector<QVector<char> > matrix(8,QVector<char>(8,' '));
-    matrix[0]={' ','n','b','q','k','b','n','r'};    //black pieces
+    matrix[0]={'r','n','b','q','k','b','n','r'};    //black pieces
     matrix[1]={'p','p','p','p','p','p','p','p'};
     matrix[6]={'P','P','P','P','P','P','P','P'};    //white pieces
     matrix[7]={'R','N','B','Q','K','B','N','R',};
@@ -60,10 +60,3 @@ void ChessAlgorithm::setCurrentPlayer(Player value)
     m_currentPlayer = value;
     emit currentPlayerChanged(m_currentPlayer);
 }
-//not sure if this is necessary
-/*bool ChessAlgorithm::move(const QPoint &from, const QPoint &to)
-{
-    //setCurrentPlayer(currentPlayer() == Player1 ? Player2 : Player1);
-    return move(from.x(), from.y(), to.x(), to.y());
-}*/
-

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <QDebug>
+#include <unistd.h>
 using namespace std;
 
 #define DEPTH 3
@@ -65,6 +66,8 @@ void ChessBoard::setData(int column, int rank, char value)
     emit dataChanged(column, rank);
     }
 }
+
+//utility function of movePiece to check if the move is valid
 bool ChessBoard::movePieceUtil(int fromColumn, int fromRank, int toColumn, int toRank)
 {
     switch (m_boardData[fromRank][fromColumn]) {
@@ -79,6 +82,8 @@ bool ChessBoard::movePieceUtil(int fromColumn, int fromRank, int toColumn, int t
     }
 
 }
+
+//function to check if the move is valid, update the board if the move is valid
 void ChessBoard::movePiece(int fromColumn, int fromRank, int toColumn, int toRank)
 {
     if(movePieceUtil(fromColumn-1,fromRank-1,toColumn-1,toRank-1))
@@ -112,23 +117,39 @@ QVector< QVector<QVector<char> > > ChessBoard::generateMoves(QVector<QVector<cha
     //maximise for black piece - small letters - depth is even
     //minimise for white piece - capital letters - depth is odd
     Piece p;
-    QVector< QVector<QVector<char> > > boardStates;
+    QVector< QVector<QVector<char> > > boardStates; boardStates.clear();
     for(int i=0;i<8;i++)
     {
         for(int j=0;j<8;j++)
-        {   char ch= (depth%2==0) ? toupper(board[i][j]):board[i][j];
-            switch(ch)
+        {
+            if(depth%2==0)
             {
-                case 'P': p.pawn.allMoves(board,boardStates,i,j); break;
-                case 'N': p.knight.allMoves(board,boardStates,i,j); break;
-                case 'B': p.bishop.allMoves(board,boardStates,i,j); break;
-                case 'R': p.rook.allMoves(board,boardStates,i,j); break;
-                case 'Q': p.queen.allMoves(board,boardStates,i,j); break;
-                case 'K': p.king.allMoves(board,boardStates,i,j); break;
-                default: break;
+                switch(board[i][j])
+                {
+                    case 'p': p.pawn.allMoves(board,boardStates,i,j); break;
+                    case 'n': p.knight.allMoves(board,boardStates,i,j); break;
+                    case 'b': p.bishop.allMoves(board,boardStates,i,j); break;
+                    case 'r': p.rook.allMoves(board,boardStates,i,j); break;
+                    case 'q': p.queen.allMoves(board,boardStates,i,j); break;
+                    case 'k': p.king.allMoves(board,boardStates,i,j); break;
+                    default: break;
+                }
             }
-        }
-    }
+            else
+            {
+                switch(board[i][j])
+                {
+                    case 'P': p.pawn.allMoves(board,boardStates,i,j); break;
+                    case 'N': p.knight.allMoves(board,boardStates,i,j); break;
+                    case 'B': p.bishop.allMoves(board,boardStates,i,j); break;
+                    case 'R': p.rook.allMoves(board,boardStates,i,j); break;
+                    case 'Q': p.queen.allMoves(board,boardStates,i,j); break;
+                    case 'K': p.king.allMoves(board,boardStates,i,j); break;
+                    default: break;
+                }
+            }//end of if
+        }//end of for
+    }//end of for
     return boardStates;
 }
 QVector<QVector<char> > ChessBoard::minimax(QVector<QVector<char> > board,int depth)
@@ -136,16 +157,15 @@ QVector<QVector<char> > ChessBoard::minimax(QVector<QVector<char> > board,int de
     //base case
     if(depth==DEPTH)
     {
-        //cout<<"DEPTH "<<DEPTH<<"========================Returning board\n";
         return board;
     }
 
-    //cout<<"DEPTH "<<depth<<"============================\n";
-    //cout<<"Generating moves===================\n";
     Piece p;
-    QVector< QVector<QVector<char> > > boardStates=generateMoves(board,depth); //cout<<"Number of States: "<<boardStates.size()<<'\n';
+    QVector< QVector<QVector<char> > > boardStates=generateMoves(board,depth);
     int minimizing=depth%2;
-    int val=!minimizing?INT_MIN:INT_MAX; //maximise for even levels and minimise for odd levels
+
+    //maximise for even levels and minimise for odd levels
+    int val=!minimizing?INT_MIN:INT_MAX;
     QVector<QVector<char> > nextBoardState,resultBoardState; int nextBoardStateScore;
     for(int i=0;i<boardStates.size();i++)
     {
@@ -162,26 +182,27 @@ QVector<QVector<char> > ChessBoard::minimax(QVector<QVector<char> > board,int de
             resultBoardState=boardStates[i];
         }
     }
-    //cout<<"END OF DEPTH "<<depth<<"============================\n";
     return resultBoardState;
 }
 void ChessBoard::AIMove()
 {
-    //display(m_boardData);
+    cout<<"\nFrom:\n";    display(m_boardData);
     QVector<QVector<char> > result=minimax(m_boardData,0);
-    //display(result);
-    QVector<QVector<int> > m(2,QVector<int>(2,-1)); int index=0;
+    cout<<"To:\n";        display(result);
+    QVector<QVector<int> > m;
     for (int i=0;i<8;i++)
     {
         for(int j=0;j<8;j++)
         {
             if(m_boardData[i][j] != result[i][j])
-                m[index++]={i,j};
+                m.push_back({i,j});
+
         }
     }
 
-    //cout<<index<<"\n";
-    //cout<<m[0][0]<<" "<<m[0][1]<<" \t "<<m[1][0]<<" "<<m[1][1]<<"\n";
+    cout<<"Size of m:"<<m.size()<<"\n";
+    for(QVector<int> v:m)   cout<<v[0]<<" "<<v[1]<<"\t";
+    cout<<"\n\n";
     if(result[m[0][0]][m[0][1]]==' ')
     {
         //move board[m[0][0]][m[0][1]] to board[m[1][0]][m[1][1]]
@@ -194,5 +215,6 @@ void ChessBoard::AIMove()
         setData(m[0][1]+1,m[0][0]+1,data(m[1][1]+1,m[1][0]+1));
         setData(m[1][1]+1,m[1][0]+1,' ');
     }
-
+    else
+        cout<<"Invalid move\n";
 }

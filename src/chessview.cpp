@@ -71,6 +71,8 @@ QRect ChessView::fieldRect(int column, int rank) const
     int offset = fontMetrics().horizontalAdvance('M');
     return fRect.translated(offset+4, 0);
 }
+
+// function to draw the labels of each row, column and color the grid
 void ChessView::paintEvent(QPaintEvent *)
 {
     if(!m_board) {
@@ -104,6 +106,7 @@ void ChessView::paintEvent(QPaintEvent *)
     }
 }
 
+//function to draw the labels for each row
 void ChessView::drawRank(QPainter *painter, int rank)
 {
     QRect r = fieldRect(1, rank);
@@ -112,6 +115,8 @@ void ChessView::drawRank(QPainter *painter, int rank)
     painter->drawText(rankRect,
     Qt::AlignVCenter | Qt::AlignRight, rankText);
 }
+
+//function to draw the labels for each column
 void ChessView::drawColumn(QPainter *painter, int column)
 {
     QRect r = fieldRect(column, 1);
@@ -119,6 +124,8 @@ void ChessView::drawColumn(QPainter *painter, int column)
     painter->drawText(columnRect,
     Qt::AlignHCenter | Qt::AlignTop, QChar('a' + column - 1));
 }
+
+//function to color the grid
 void ChessView::drawField(QPainter *painter, int column, int rank)
 {
     QBrush b;
@@ -131,8 +138,6 @@ void ChessView::drawField(QPainter *painter, int column, int rank)
 
     painter->setBrush(b);
     painter->drawRect(rect);
-
-
 }
 void ChessView::setPiece(char type, const QIcon &icon)
 {
@@ -143,6 +148,8 @@ QIcon ChessView::piece(char type) const
 {
     return m_pieces.value(type, QIcon());
 }
+
+// function to draw the piece on the colored grid
 void ChessView::drawPiece(QPainter *painter, int column, int rank)
 {
 
@@ -205,7 +212,6 @@ void ChessView::drawHighlights(QPainter *painter)
         if(hl->type() == FieldHighlight::Type) {
             FieldHighlight *fhl = static_cast<FieldHighlight*>(hl);
             QRect rect = fieldRect(fhl->column(), fhl->rank());
-            //painter->fillRect(rect, fhl->color());
             painter->setPen(QPen(QColor(0,255,0),5));
             painter->drawRect(rect);
         }
