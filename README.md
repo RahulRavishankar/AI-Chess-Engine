@@ -3,7 +3,7 @@
 Language: C++\
 Framework: Qt
 
-![alt-text](https://github.com/RahulRavishankar/AI-Chess-Engine/recording.gif)
+![alt-text](https://github.com/RahulRavishankar/AI-Chess-Engine/blob/master/recording.gif)
 
 #### Move generation and Position evaluation
 Relative to the player for whom we want to evaluate the position, any of their own pieces will add to their score, and their opponent’s pieces will subtract.
