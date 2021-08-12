@@ -4,6 +4,7 @@ debug/chessalgorithm.o
 debug/chessboard.o
 debug/chessview.o
 debug/pieces.o
+debug/utils.o
 debug/qrc_app_resource.o
 debug/moc_mainwindow.o
 debug/moc_chessalgorithm.o

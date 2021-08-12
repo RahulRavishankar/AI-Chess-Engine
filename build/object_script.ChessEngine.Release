@@ -4,6 +4,7 @@ release/chessalgorithm.o
 release/chessboard.o
 release/chessview.o
 release/pieces.o
+release/utils.o
 release/qrc_app_resource.o
 release/moc_mainwindow.o
 release/moc_chessalgorithm.o
