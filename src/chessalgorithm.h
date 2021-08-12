@@ -16,7 +16,7 @@ public:
     ChessBoard* board() const;
     void AIMove();
     QVector< QVector<QVector<Piece*> > > generateMoves(QVector<QVector<Piece*> >& board,int depth);
-    QVector<QVector<Piece*> > minimax(QVector<QVector<Piece*> > board,int depth);
+    QVector<QVector<Piece*> > minimax(QVector<QVector<Piece*> > board,int depth, int& alpha, int& beta);
 
     enum Result { NoResult, Player1Wins, Draw, Player2Wins };
     Q_ENUM(Result)

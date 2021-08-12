@@ -6,7 +6,7 @@
 #include "pieces.h"
 #include "utils.h"
 
-#define DEPTH 3
+#define DEPTH 7
 
 ChessAlgorithm::ChessAlgorithm(QObject *parent) : QObject(parent)
 {
@@ -85,14 +85,12 @@ QVector< QVector<QVector<Piece*> > > ChessAlgorithm::generateMoves(QVector<QVect
     //maximise for black piece - small letters - depth is even
     //minimise for white piece - capital letters - depth is odd
     QVector< QVector<QVector<Piece*> > > boardStates;
-    char label;
 
     boardStates.clear();
     for(int i=0;i<8;i++)
     {
         for(int j=0;j<8;j++)
         {
-            label = *board[i][j];
             if((depth%2==0 && islower(*board[i][j])) ||
                (depth%2==1 && isupper(*board[i][j])) )
             {
@@ -102,7 +100,8 @@ QVector< QVector<QVector<Piece*> > > ChessAlgorithm::generateMoves(QVector<QVect
     }
     return boardStates;
 }
-QVector<QVector<Piece*> > ChessAlgorithm::minimax(QVector<QVector<Piece*> > board,int depth)
+
+QVector<QVector<Piece*> > ChessAlgorithm::minimax(QVector<QVector<Piece*> > board, int depth, int& alpha, int& beta)
 {
     //base case
     if(depth==DEPTH)
@@ -119,26 +118,39 @@ QVector<QVector<Piece*> > ChessAlgorithm::minimax(QVector<QVector<Piece*> > boar
     QVector<QVector<Piece*> > nextBoardState,resultBoardState; int nextBoardStateScore;
     for(int i=0;i<boardStates.size();i++)
     {
-        nextBoardState=minimax(boardStates[i],depth+1);
+        nextBoardState = minimax(boardStates[i],depth+1,alpha, beta);
         nextBoardStateScore = calculateScore(nextBoardState);
-        if(!minimizing && nextBoardStateScore>val)
+        if(!minimizing)
         {
-            val=nextBoardStateScore;
-            resultBoardState=boardStates[i];
+            if(nextBoardStateScore>val)
+            {
+                val=nextBoardStateScore;
+                resultBoardState=boardStates[i];
+            }
+            alpha = max(alpha, val);
+            if(beta<=alpha)
+                break;
         }
-        else if(minimizing && nextBoardStateScore<val)
+        else if(minimizing)
         {
-            val=nextBoardStateScore;
-            resultBoardState=boardStates[i];
+            if(nextBoardStateScore<val)
+            {
+                val=nextBoardStateScore;
+                resultBoardState=boardStates[i];
+            }
+            beta=min(beta,val);
+            if(beta<=alpha)
+                break;
         }
     }
     return resultBoardState;
 }
-
 void ChessAlgorithm::AIMove()
 {
     cout<<"From: "<<"\n";   display(m_board->getBoard());
-    QVector<QVector<Piece*> > result=minimax(m_board->getBoard(),0);
+    int alpha = INT_MIN;
+    int beta = INT_MAX;
+    QVector<QVector<Piece*> > result=minimax(m_board->getBoard(),0, alpha, beta);
     cout<<"To: "<<"\n";     display(result);
     QVector<QVector<int> > m;
     for (int i=0;i<8;i++)

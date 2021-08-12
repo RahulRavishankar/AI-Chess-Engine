@@ -39,8 +39,7 @@ void MainWindow::viewClicked(const QPoint &field)
             m_view->addHighlight(m_view->m_selectedField);
         }
     } else {
-//        cout<<m_clickPoint.x()<<" "<<field.x()<<" "<<m_clickPoint.y()<<" "<<field.y()<<"\n";
-        if(field != m_clickPoint && m_clickPoint.x()!=field.x() && m_clickPoint.y()!=field.y()) {
+        if(field != m_clickPoint) {
             m_view->board()->movePiece(
             m_clickPoint.x(), m_clickPoint.y(),
             field.x(), field.y() );
@@ -50,9 +49,7 @@ void MainWindow::viewClicked(const QPoint &field)
         delete m_view->m_selectedField;
         m_view->m_selectedField = nullptr;
 
-       if(field != m_clickPoint && m_clickPoint.x()!=field.x() && m_clickPoint.y()!=field.y()) {
-            m_algorithm->AIMove();
-       }
+        m_algorithm->AIMove();
     }
 }
 
