@@ -10,9 +10,8 @@ ChessView::ChessView(QWidget *parent) : QWidget(parent)
 
 void ChessView::setBoard(ChessBoard *board)
 {
-
     if(m_board == board) {
-    return;
+        return;
     }
 
     m_board = board;
@@ -139,11 +138,13 @@ void ChessView::drawField(QPainter *painter, int column, int rank)
     painter->setBrush(b);
     painter->drawRect(rect);
 }
+
 void ChessView::setPiece(char type, const QIcon &icon)
 {
     m_pieces.insert(type, icon);
     update();
 }
+
 QIcon ChessView::piece(char type) const
 {
     return m_pieces.value(type, QIcon());
@@ -154,9 +155,11 @@ void ChessView::drawPiece(QPainter *painter, int column, int rank)
 {
 
     QRect rect = fieldRect(column, rank);
-    char value = m_board->data(column, rank);
-    if(value != ' ') {
-        QIcon icon = piece(value);
+    Piece* value = m_board->data(column, rank);
+
+//    if(value->getLabel() != ' ') {
+    if(*m_board->data(column, rank) != ' ') {
+        QIcon icon = piece(value->getLabel());
         if(!icon.isNull()) {
             icon.paint(painter, rect, Qt::AlignCenter);
         }
@@ -170,15 +173,16 @@ QPoint ChessView::fieldAt(const QPoint &pt) const
     if(!m_board) {
         return QPoint();
     }
+
     const QSize fs = m_fieldSize;
     int offset = fontMetrics().horizontalAdvance('M') + 4;
     // 'M' is the widest letter
     if(pt.x() < offset) {
         return QPoint();
     }
+
     int c = (pt.x() - offset) / fs.width();
     int r = pt.y() / fs.height();
-
     if(c < 0 || c >= m_board->columns() ||
        r < 0 || r >= m_board->ranks()) {
         return QPoint();
@@ -201,10 +205,12 @@ void ChessView::addHighlight(ChessView::Highlight *hl) {
     m_highlights.append(hl);
     update();
 }
+
 void ChessView::removeHighlight(ChessView::Highlight *hl) {
     m_highlights.removeOne(hl);
     update();
 }
+
 void ChessView::drawHighlights(QPainter *painter)
 {
     for(int idx = 0; idx < highlightCount(); ++idx) {

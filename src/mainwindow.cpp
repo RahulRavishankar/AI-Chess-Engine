@@ -2,12 +2,12 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+: QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     m_view = new ChessView;
     m_algorithm = new ChessAlgorithm(this);
+
     m_algorithm->newGame();
     m_view->setBoard(m_algorithm->board());
     setCentralWidget(m_view);
@@ -33,13 +33,14 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::viewClicked(const QPoint &field)
 {
     if(m_clickPoint.isNull()) {
-        if(m_view->board()->data(field.x(), field.y()) != ' ') {
+        if(*m_view->board()->data(field.x(), field.y()) != ' ') {
             m_clickPoint = field;
             m_view->m_selectedField = new ChessView::FieldHighlight(field.x(), field.y(), QColor(255, 0, 0,100) );
             m_view->addHighlight(m_view->m_selectedField);
         }
     } else {
-        if(field != m_clickPoint) {
+//        cout<<m_clickPoint.x()<<" "<<field.x()<<" "<<m_clickPoint.y()<<" "<<field.y()<<"\n";
+        if(field != m_clickPoint && m_clickPoint.x()!=field.x() && m_clickPoint.y()!=field.y()) {
             m_view->board()->movePiece(
             m_clickPoint.x(), m_clickPoint.y(),
             field.x(), field.y() );
@@ -48,6 +49,10 @@ void MainWindow::viewClicked(const QPoint &field)
         m_view->removeHighlight(m_view->m_selectedField);
         delete m_view->m_selectedField;
         m_view->m_selectedField = nullptr;
+
+       if(field != m_clickPoint && m_clickPoint.x()!=field.x() && m_clickPoint.y()!=field.y()) {
+            m_algorithm->AIMove();
+       }
     }
 }
 

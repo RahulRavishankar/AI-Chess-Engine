@@ -21,14 +21,23 @@ SOURCES += \
     chessalgorithm.cpp \
     chessboard.cpp \
     chessview.cpp \
-    pieces.cpp
+    pieces.cpp \
+    utils.cpp
 
 HEADERS += \
+    bishop.h \
+    empty.h \
+    king.h \
+    knight.h \
     mainwindow.h \
     chessalgorithm.h \
     chessboard.h \
     chessview.h \
-    pieces.h \
+    pawn.h \
+    pieces.h \ \
+    queen.h \
+    rook.h \
+    utils.h
 
 FORMS += \
     mainwindow.ui

@@ -17,9 +17,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     void viewClicked(const QPoint &field);
 //    void play();
-//    void display(const QVector<QVector<char> > &board);
-//    QVector< QVector<QVector<char> > > generateMoves(QVector<QVector<char> > board,int depth);
-//    QVector<QVector<char> > minimax(QVector<QVector<char> > board,int depth);
 
     ChessView *m_view;
     ChessAlgorithm *m_algorithm;

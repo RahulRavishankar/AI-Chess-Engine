@@ -12,15 +12,18 @@ class ChessView : public QWidget
     Q_OBJECT
     Q_PROPERTY(QSize fieldSize
     READ fieldSize WRITE setFieldSize NOTIFY fieldSizeChanged)
+
 public:
     explicit ChessView(QWidget *parent = nullptr);
     void setBoard(ChessBoard *);
     void setFieldSize(QSize arg);
+    ChessBoard* board() const;
+
     void setPiece(char type, const QIcon &icon);
     QIcon piece(char type) const;
-    ChessBoard* board() const;
     void mouseReleaseEvent(QMouseEvent *event);
     int countMouseRelease;
+
     class Highlight {
         public:
             Highlight() {}
@@ -57,13 +60,14 @@ public:
 private:
     QPointer<ChessBoard> m_board;
     QSize m_fieldSize;
+    QMap<char, QIcon> m_pieces;
+    QList<Highlight*> m_highlights;
+
     QSize sizeHint() const;
     QSize fieldSize();
     QRect fieldRect(int column, int rank) const;
     void paintEvent(QPaintEvent *);
-    QMap<char, QIcon> m_pieces;
     QPoint fieldAt(const QPoint &pt) const;
-    QList<Highlight*> m_highlights;
 
 protected:
     virtual void drawRank(QPainter *painter, int r);

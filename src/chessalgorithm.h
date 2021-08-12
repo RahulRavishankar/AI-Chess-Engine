@@ -14,6 +14,9 @@ class ChessAlgorithm : public QObject
 public:
     explicit ChessAlgorithm(QObject *parent = nullptr);
     ChessBoard* board() const;
+    void AIMove();
+    QVector< QVector<QVector<Piece*> > > generateMoves(QVector<QVector<Piece*> >& board,int depth);
+    QVector<QVector<Piece*> > minimax(QVector<QVector<Piece*> > board,int depth);
 
     enum Result { NoResult, Player1Wins, Draw, Player2Wins };
     Q_ENUM(Result)
@@ -38,6 +41,7 @@ protected:
     void setCurrentPlayer(Player);
     Result m_result;
     Player m_currentPlayer;
+
 private:
     ChessBoard* m_board;
 
